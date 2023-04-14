@@ -1,0 +1,23 @@
+import csv
+with open('books.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=';')
+    data = list(reader)
+num_records = len(data) - 1
+print(f'Количество записей: {num_records}')
+num_long_titles = sum(len(row[1]) > 30 for row in data)
+print("Количество записей с длинными названиями:", num_long_titles)
+author = str(input())
+
+books_by_author = [row for row in data if row[3] == author and float(row[7]) <= 150]
+num_books_by_author = len(books_by_author)
+print("Количество книг автора",author, "удовлетворяющих условиям:", num_books_by_author)
+n = 20
+sample_books = [row for row in data[1:21]]
+with open('bibliography.txt', 'w') as outfile:
+    for i in range(len(sample_books)):
+        book = sample_books[i]
+        author = book[4]
+        title = book[1]
+        year = book[6].split('.')[-1]
+        bibliography = f'{author}. {title} - {year}'
+        outfile.write(f'{i + 1}. {bibliography}\n')
