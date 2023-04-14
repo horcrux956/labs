@@ -1,0 +1,77 @@
+def esc(code):
+    return f'\u001b[{code}m'
+def flag_cz():
+    for i in range(6):
+        print(BLUE+"        " + WHITE + "        "+  RED + "        " + END)
+def array_init(array_in, st):
+    for i in range(10):
+        for j in range(10):
+            if j == 0:
+                array_in[i][j] = st * (8 - i) + st
+            if i == 9:
+                array_in[i][j] = j
+    return array_in
+def func():
+    for y in range(10, -1, -1):
+        for x in range(0, 20):
+            if round(y) == round(x ** 2 / 40):
+                print(RED + " " + END, end="")
+            else:
+                print(WHITE + " " + END, end="")
+        print()
+def uzor():
+    k=0
+    for i in range (0,3,1):
+        for j in range (1+k,4+k,1):
+            if (j%2==1):
+                if (j==k+3):
+                    print(RED + "   "+END, sep='', end='')
+                else:
+                    print(RED + "   ", sep='', end='')
+            else:
+                if (j==k+3):
+                    print(WHITE + "   "+END, sep='', end='')
+                else:
+                    print(WHITE + "   ", sep='', end='')
+        k+=3
+        print()
+RED = esc(41)
+BLUE = esc(44)
+WHITE = esc(47)
+END = esc(0)
+func()
+flag_cz()
+uzor()
+before_2014=int(0)
+after_2014=int(0)
+with open('books-en.csv', encoding='cp1251') as file:
+    data = [row.strip() for row in file] #не могу сделать потому что вы долбаебы двух авторов одной книги раздеяете точкой с запятой из за чего использование split невозможно гении ебанные p.s. осле того как написал это нашел еще сотню черкашей слона в вашей таблице идите нахуй исправляйте свое дерьмо, потому что что бы написать код для вашего csv файла надо быть ебучим гением нахуй, и если вы доебетесь до моих костылей тоя с делаю так что бы вам ходить с ними пришлось
+    data.pop(0)
+    for i in range (0,len(data)):
+        print(data[i])
+        while ("&amp;" in data[i] or " ; " in data[i] or "; " in data[i] or "&lt;" in data[i] or ";:" in data[i]):
+            data[i]=data[i].replace("&amp;"," ",1)
+            data[i] = data[i].replace(" ; ", " ", 1)
+            data[i] = data[i].replace("; ", " ", 1)
+            data[i] = data[i].replace("&lt;"," ",1)
+            data[i] = data[i].replace(";:", " ", 1)
+for i in range(0,len(data)-1,1):
+    date = data[i].split(";")
+    print(date)
+    part = date[3]
+    part_int=int(part)
+    if (part_int<1980):
+        before_2014+=1
+    else:
+        after_2014+=1
+total=before_2014+after_2014
+before_2014_percent = float(before_2014 / total * 100)
+after_2014_percent = float(after_2014 / total * 100)
+print(f'Книг до 2014 года: {before_2014_percent:.2f}%')
+print(f'Книг после 2014 года: {after_2014_percent:.2f}%')
+print('Диаграмма:')
+print(WHITE + " "*30)
+print((RED + " ") * round(before_2014_percent), before_2014_percent, WHITE + " ")
+print(WHITE + " "*30)
+print((RED +" ") * round(after_2014_percent),after_2014_percent, WHITE + " ")
+print(WHITE + " "*30)
