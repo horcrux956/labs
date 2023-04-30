@@ -44,7 +44,7 @@ flag_cz()
 uzor()
 before_2014=int(0)
 after_2014=int(0)
-with open('books-en2.csv', encoding='cp1251') as file:
+with open('books-en-lab2.csv', encoding='cp1251') as file:
     data = [row.strip() for row in file] 
     data.pop(0)
     for i in range (0,len(data)):
