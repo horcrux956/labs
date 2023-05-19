@@ -1,0 +1,22 @@
+class buiding:
+    def init(self,area,price,number_of_visitors):
+        self.area=area
+        self.price=price
+        self.number_of_visitors=number_of_visitors
+    def mega_price(self):
+        return self.area*self.price
+    def prise_per_visitor(self):
+        return self.mega_price()/self.number_of_visitors
+class derevnya(buiding):
+    def init(self,area,price,number_of_visitors):
+        super().init(area,price,number_of_visitors)
+class mnogokvartir(buiding):
+    def init(self,area,price,number_of_visitors):
+        super().init(area,price,number_of_visitors)
+building1=derevnya(100,1000,1)
+building2=mnogokvartir(1500,50,100)
+
+print(building1.mega_price())
+print(building2.mega_price())
+print(building1.prise_per_visitor())
+print(building2.prise_per_visitor())
