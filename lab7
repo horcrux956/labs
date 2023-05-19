@@ -1,0 +1,63 @@
+import numpy
+import time
+import csv
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+#1 часть
+a=numpy.random.random((1,1000000))
+b=numpy.random.random((1,1000000))
+c=numpy.zeros((1,1000000))
+s1time=time.perf_counter()
+numpy.multiply(a,b,c)
+s2time=time.perf_counter()
+t1=s2time-s1time
+c=numpy.zeros((1,1000000))
+s3time=time.perf_counter()
+for i in range(len(a)):
+    c[i]=a[i]*b[i]
+s4time=time.perf_counter()
+t2=s4time-s3time
+print(f"Время NumPy: {t1:.6f}")
+print(f"Время перебора: {t2:.6f}")
+
+
+#2 часть
+with open('data1.csv', 'r') as file:
+    reader = csv.reader(file, delimiter=';')
+    data = list(reader)
+
+c1 = [float(row[0]) for row in data[1:] if float(row[0]) >= 4]
+c5 = [float(row[4]) for row in data[400:]]
+
+plt.figure()
+plt.plot(c1, label='Столбец 1')
+plt.plot(c5, label='Столбец 5')
+plt.title('Графики данных из столбцов 1 и 5')
+plt.xlabel('Индекс')
+plt.ylabel('Значение')
+plt.legend()
+plt.show()
+
+plt.figure()
+corr = numpy.corrcoef(c1, c5)
+plt.scatter(c1, c5)
+plt.title('График корреляции между 1 и 5 столбцов')
+plt.xlabel('Столбец 1')
+plt.ylabel('Столбец 5')
+plt.text(4.2, 11, f'Коэффициент корреляции: {corr[0, 1]:.2f}', bbox=dict(facecolor='white', edgecolor='black'))
+plt.show()
+
+plt.figure()
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+x = numpy.linspace(-numpy.pi, numpy.pi, 100)
+y = x
+x, y = numpy.meshgrid(x, y)
+z = numpy.tan(x)
+ax.plot_surface(x, y, z, cmap='viridis')
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.set_title('3D График')
+plt.show()
