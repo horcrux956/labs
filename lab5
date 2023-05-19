@@ -1,0 +1,42 @@
+import requests
+import json
+city_name=input("Введите город что бы узнать погоду: ")
+url = f'https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid=8f2b48c29a75de3d1849dd337d32ab7c'
+
+response = requests.get(url)
+data = response.json()
+weather = data["weather"][0]["description"]
+humidity=data["main"]["humidity"]
+pressure=data["main"]["pressure"]
+print(f"Описание погоды в {city_name}: {weather}")
+print(f"Влажность в {city_name}: {humidity}")
+print(f"Давление в {city_name}: {pressure}")
+
+url2 = f'https://api.covidtracking.com/v1/us/daily.json'
+response2 = requests.get(url2)
+data2=response2.json()
+
+with open("data.json", "w") as outfile:
+    json.dump(data2, outfile)
+
+with open('data.json', 'r') as file:
+    data = json.load(file)
+print("Работса с сайтом api.covidtracking.com")
+print("Параметры: date,states,positive,negative,pending,hospitalizedCurrently,hospitalizedCumulative,inIcuCurrently,inIcuCumulative,onVentilatorCurrently,onVentilatorCumulativedateChecked,dateChecked,death,hospitalized,totalTestResults,lastModified,recovered,total,posNeg,deathIncrease,hospitalizedIncrease,negativeIncrease,positiveIncrease,totalTestResultsIncrease,hash")
+zapros1=input("Введите имя параметрa по которому искать: ")
+none_type=['positive','negative','pending','hospitalizedCurrently','hospitalizedCumulative','inIcuCurrently','inIcuCumulative','onVentilatorCurrently','onVentilatorCumulative','death','hospitalized','recovered']
+stroka=['lastModified','hash']
+if (zapros1 in none_type):
+    zapros2=input("Введите значение параметра по которому искать: ")
+    if (zapros2 == "None"):
+        zapros3 = None
+    else:
+        zapros3 = int(zapros2)
+elif (zapros1 in stroka):
+    zapros3=input("Введите значение параметра по которому искать: ")
+else:
+    zapros3 = int(input("Введите значение параметра по которому искать: "))
+
+for item in data:
+    if item[zapros1] == zapros3:
+        print(item)
