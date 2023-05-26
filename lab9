@@ -1,0 +1,116 @@
+python:
+
+from flask import Flask, render_template, request, redirect
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(name)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///notes.db'  # Путь к базе данных
+db = SQLAlchemy(app)
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text)
+    important = db.Column(db.Boolean)
+
+    def init(self, text, important):
+        self.text = text
+        self.important = important
+@app.route('/')
+def index():
+    notes = Note.query.all()
+    return render_template('index.html', notes=notes)
+
+@app.route('/add', methods=['POST'])
+def add():
+    text = request.form['text']
+    important = 'important' in request.form
+    note = Note(text, important)
+    db.session.add(note)
+    db.session.commit()
+    return redirect('/')
+
+if name == 'main':
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
+    
+    html:
+    
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>Заметки</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="checkbox"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Заметки</h1>
+
+    <form action="/add" method="post">
+        <label for="text">Текст заметки:</label><br>
+        <input type="text" id="text" name="text"><br>
+
+        <label for="important">Важно:</label>
+        <input type="checkbox" id="important" name="important"><br>
+
+        <input type="submit" value="Добавить">
+    </form>
+
+    <table>
+        <tr>
+            <th>Заметка</th>
+            <th>Важность</th>
+        </tr>
+        {% for note in notes %}
+        <tr>
+            <td>{{ note.text }}</td>
+            <td>{% if note.important %}<strong>{{ note.text }}</strong>{% else %}Обычная{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
