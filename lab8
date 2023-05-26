@@ -1,0 +1,50 @@
+import cv2
+import numpy as np
+
+lower_color = np.array([0, 100, 100])
+upper_color = np.array([10, 255, 255])
+
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    
+    # Преобразование кадра в цветовое пространство HSV
+    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    
+    # Фильтрация кадра по диапазону цветов
+    mask = cv2.inRange(hsv_frame, lower_color, upper_color)
+    
+    # Применение морфологических операций для удаления шума
+    kernel = np.ones((5, 5), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    
+    # Поиск контуров меток
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # Отображение контуров и центров меток на кадре
+    for contour in contours:
+        # Определение границы контура
+        x, y, w, h = cv2.boundingRect(contour)
+        
+        # Отображение прямоугольной области вокруг метки
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        
+        # Отображение центра метки
+        center_x = x + w // 2
+        center_y = y + h // 2
+        cv2.circle(frame, (center_x, center_y), 4, (0, 0, 255), -1)
+        
+        # Вывод координат центра метки
+        label_coordinates = f"Label coordinates: ({center_x}, {center_y})"
+        cv2.putText(frame, label_coordinates, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    
+    # Вывод кадра с обнаруженными метками
+    cv2.imshow('Label Detection', frame)
+    
+    # Выход из цикла при нажатии клавиши 'q'
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
