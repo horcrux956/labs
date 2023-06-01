@@ -1,0 +1,84 @@
+import requests
+import pyttsx3
+import speech_recognition as sr
+from PIL import Image
+from io import BytesIO
+import random
+
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[0].id)  # Мужской голос
+
+r = sr.Recognizer()
+
+def recognize_speech():
+    with sr.Microphone(device_index=1) as source:
+
+        print("Слушаю")
+        audio = r.listen(source)
+        try:
+            text = r.recognize_google(audio, language='ru-RU')
+            print("Вы сказали: " + text)
+            return text.lower()
+        except sr.UnknownValueError:
+            print("Не удалось распознать речь")
+        except sr.RequestError as e:
+            print("Ошибка сервиса распознавания речи; {0}".format(e))
+
+def display_image(image_url):
+    response = requests.get(image_url)
+    if response.status_code == 200:
+        img = Image.open(BytesIO(response.content))
+        img.show()
+    else:
+        print("Ошибка при загрузке изображения")
+
+def save_image(image_url):
+    response = requests.get(image_url)
+    if response.status_code == 200:
+        with open("dog_image.jpg", "wb") as file:
+            file.write(response.content)
+        print("Изображение сохранено в файл dog_image.jpg")
+    else:
+        print("Ошибка при загрузке изображения")
+
+def next_image():
+    response = requests.get('https://dog.ceo/api/breeds/image/random')
+    if response.status_code == 200:
+        image_url = response.json()['message']
+        print("Следующее изображение:", image_url)
+        display_image(image_url)
+    else:
+        print("Ошибка при получении изображения")
+
+def get_breed_name():
+    response = requests.get('https://dog.ceo/api/breeds/list/all')
+    if response.status_code == 200:
+        breeds = response.json()['message']
+        random_breed = random.choice(list(breeds.keys()))
+        image_url = requests.get(f'https://dog.ceo/api/breed/{random_breed}/images/random').json()['message']
+        breed_name = breeds[random_breed][0] if breeds[random_breed] else random_breed
+        print("Порода собаки на изображении:", breed_name)
+        display_image(image_url)
+    else:
+        print("Ошибка при получении списка пород")
+
+while True:
+    command = recognize_speech()
+
+    if command == "показать":
+        next_image()
+    elif command == "сохранить":
+        response = requests.get('https://dog.ceo/api/breeds/image/random')
+        if response.status_code == 200:
+            image_url = response.json()['message']
+            save_image(image_url)
+        else:
+            print("Ошибка при получении изображения")
+    elif command == "следующая":
+        next_image()
+    elif command == "назвать породу":
+        get_breed_name()
+    else:
+        print("Не распознана команда")
+
